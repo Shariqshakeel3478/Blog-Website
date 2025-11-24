@@ -5,6 +5,8 @@ import "react-quill-new/dist/quill.snow.css";
 import axios from "axios";
 import slugify from "slugify";
 import { CategoryContext } from "../context/CategoryContext";
+import { AuthContext } from "../context/AuthProvider";
+import Swal from "sweetalert2";
 
 export default function AddBlog() {
     const [title, setTitle] = useState("");
@@ -18,9 +20,35 @@ export default function AddBlog() {
     const [slug, setSlug] = useState("")
 
     const { categories } = useContext(CategoryContext);
+    const { user } = useContext(AuthContext)
+    const [user_id, setUser_id] = useState(user ? user.id : null)
 
 
-    // auto-generate slug from title
+    const handleImageUpload = async (file) => {
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        try {
+            setUploading(true);
+
+            const res = await axios.post("http://localhost:5000/upload-image", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            setImageUrl(res.data.url);
+            setUploading(false);
+
+        } catch (err) {
+            console.error(err);
+            alert("Image upload failed");
+            setUploading(false);
+        }
+    };
+
+
+
     const handleTitleChange = (v) => {
         setTitle(v);
         setSlug(slugify(v || "", { lower: true, strict: true }).slice(0, 80));
@@ -49,21 +77,33 @@ export default function AddBlog() {
             content,
             imageUrl,
             author: "Shariq Shakeel",
-            catId
+            catId,
+            user_id: user.id
 
         };
 
         try {
             const res = await axios.post("http://localhost:5000/addblog", payload);
 
-            alert("Blog published");
+            if (!res) {
+                alert("something went wrong")
+            }
+            else {
+                Swal.fire({
+                    title: "Blog Published",
+                    icon: "success"
+                });
+                setTitle("");
+                setMetaTitle("");
+                setMetaDescription("");
+                setCategory("");
+                setContent("");
+                setCatId()
+                setUser_id()
+            }
 
-            setTitle("");
-            setMetaTitle("");
-            setMetaDescription("");
-            setCategory("");
-            setContent("");
-            setCatId()
+
+
 
             console.log("Saved:", res.data);
         } catch (err) {
@@ -150,7 +190,12 @@ export default function AddBlog() {
                             <aside className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700">Featured Image</label>
-                                    <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="w-full border rounded-lg px-3 py-2 outline-none" placeholder="Image URL" />
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="w-full border rounded-lg px-3 py-2 outline-none"
+                                        onChange={(e) => handleImageUpload(e.target.files[0])}
+                                    />
                                 </div>
 
 

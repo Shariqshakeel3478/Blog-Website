@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom';
+import { useContext } from 'react';
+import { BlogContext } from '../context/BlogContext';
 
 export default function Blog() {
 
-    const [blogs, setBlogs] = useState([])
+    const { blogs } = useContext(BlogContext)
+    console.log("Blogs", blogs)
 
-    useEffect(() => {
-        const getBlogs = async () => {
-            const response = await axios.get('http://localhost:5000/blogs');
-            setBlogs(response.data);
-            console.log(response.data)
-        };
-        getBlogs();
-    }, []);
 
     return (
-        <div className="mt-50">
+        <div className="mt-0">
             <section className="max-w-6xl mx-auto px-4 py-10">
                 <div className="flex flex-wrap items-center justify-between mb-8">
                     <h2 className="text-4xl font-bold md:text-5xl">Featured Blogs</h2>
@@ -43,7 +38,7 @@ export default function Blog() {
                             <div className="flex flex-col justify-between flex-grow p-5">
                                 <div>
                                     <span className="inline-block mb-3 text-xs font-semibold uppercase text-blue-600 border-b-2 border-blue-600">
-                                        Category
+                                        {blog.category_name}
                                     </span>
                                     <h3 className="text-2xl font-bold mb-3 hover:text-blue-600 transition-colors duration-200">
                                         {blog.title}
@@ -53,12 +48,12 @@ export default function Blog() {
 
                                 <Link to={`/blogs/${blog.id}`}>
                                     <div className="mt-5">
-                                        <a
-                                            href="#"
+                                        <div
+
                                             className="inline-block text-blue-600 font-semibold uppercase text-sm hover:underline"
                                         >
                                             Read More →
-                                        </a>
+                                        </div>
                                     </div>
                                 </Link>
                             </div>

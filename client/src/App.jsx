@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import Navbar from './components/Navbar'
 import Blog from './components/Blog'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Login from './pages/Login'
@@ -19,47 +18,95 @@ import BlogManagement from './admin/BlogManagment'
 import BlogEditor from './admin/BlogEditor'
 import Mains from './admin/Mains'
 import Dashboard from './admin/pages/Dashboard'
+import AuthProvider from './context/AuthProvider'
+import axios from 'axios'
+import ProtectedRoute from './components/ProtectedRoute'
+import UserProfile from './pages/userProfile'
+import BlogProvider, { BlogContext } from './context/BlogContext'
+import CommentProvider from './context/CommentContext';
+import { useContext } from 'react'
+
+
+
 
 function App() {
+
+
   return (
     <>
-      <CategoryProvider>
+      <AuthProvider>
 
-        <Router>
-          <Routes>
-
-            <Route path='/' element={
-              <>
+        <BlogProvider>
+          <CommentProvider>
 
 
-                <Hero />
-                <Blog />
-                <Categories />
-                <About />
-                <Subscribe />
-                <Footer />
+            <CategoryProvider>
+
+              <Router>
+                <Routes>
+
+                  <Route path='/' element={
+                    <>
 
 
-              </>
-            } />
-
-            <Route path='/add-blog' element={<AddBlog />
-
-
-            } />
-            <Route path='/edit/:id' element={<BlogEditor />} />
-            <Route path='/blogs/:id' element={<SingleBlog />} />
-            <Route path='/adminBlogs' element={<BlogManagement />} />
-            <Route path='/blogEditor/:id' element={<BlogEditor />} />
-            <Route path='/adminHome' element={<Mains />}></Route>
-            <Route path='/dashboard' element={<Dashboard />}></Route>
-            <Route path='/signup' element={<Signup />}></Route>
-            <Route path='/login' element={<Login />}></Route>
-          </Routes>
-        </Router>
+                      <Hero />
+                      <Blog />
+                      <Categories />
+                      <About />
+                      <Subscribe />
+                      <Footer />
 
 
-      </CategoryProvider>
+                    </>
+                  } />
+
+                  <Route path='/add-blog' element={<AddBlog />
+
+
+                  } />
+
+                  <Route path='/edit/:id' element={
+                    <ProtectedRoute requiredRole="admin">
+                      <BlogEditor />
+                    </ProtectedRoute>
+                  } />
+                  <Route path='/blogs/:id' element={
+
+                    <SingleBlog />
+
+                  } />
+                  <Route path='/adminBlogs' element={
+                    <ProtectedRoute requiredRole="admin">
+                      <BlogManagement />
+                    </ProtectedRoute>
+                  } />
+                  <Route path='/blogEditor/:id' element={
+                    <ProtectedRoute requiredRole="admin">
+                      <BlogEditor />
+                    </ProtectedRoute>
+                  } />
+                  <Route path='/adminHome' element={
+                    <ProtectedRoute requiredRole="admin">
+                      <Mains />
+                    </ProtectedRoute>
+                  }></Route>
+                  <Route path='/dashboard' element={
+                    <ProtectedRoute requiredRole="admin">
+
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }></Route>
+                  <Route path='/signup' element={<Signup />}></Route>
+                  <Route path='/login' element={<Login />}></Route>
+                  <Route path='/profile' element={<UserProfile />}></Route>
+                </Routes>
+              </Router>
+
+
+            </CategoryProvider>
+          </CommentProvider>
+        </BlogProvider>
+      </AuthProvider>
 
     </>
 

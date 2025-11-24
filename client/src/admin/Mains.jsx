@@ -3,10 +3,10 @@ import React from 'react';
 export default function Dashboard() {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      {/* Page Title */}
+
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
 
-      {/* Quick Stats */}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white shadow rounded-lg p-5">
           <p className="text-gray-500">Total Posts</p>
@@ -26,7 +26,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Activity */}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white shadow rounded-lg p-5">
           <h2 className="text-xl font-semibold mb-4">Latest Posts</h2>
@@ -47,7 +47,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Graphs / Charts */}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white shadow rounded-lg p-5 h-64 flex items-center justify-center">
           <p className="text-gray-400">Posts per Month Graph</p>

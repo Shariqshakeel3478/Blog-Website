@@ -4,10 +4,12 @@ import Mains from '../Mains';
 import Blogs from '../BlogManagment';
 import Categories from '../Categories';
 import Comments from '../Comments';
-import Settings from '../UserManagement';
+import Settings from '../Settings';
+import Users from '../Users';
+
 
 export default function Dashboard() {
-    const [activePage, setActivePage] = useState('home'); // default page
+    const [activePage, setActivePage] = useState('home');
 
     const renderComponent = () => {
         switch (activePage) {
@@ -21,6 +23,8 @@ export default function Dashboard() {
                 return <Comments />;
             case 'settings':
                 return <Settings />;
+            case 'users':
+                return <Users />
             default:
                 return <Mains />;
         }
@@ -59,6 +63,12 @@ export default function Dashboard() {
                             className="hover:text-blue-300 cursor-pointer transition"
                         >
                             Comments
+                        </li>
+                        <li
+                            onClick={() => setActivePage('users')}
+                            className="hover:text-blue-300 cursor-pointer transition"
+                        >
+                            Users
                         </li>
                         <li
                             onClick={() => setActivePage('settings')}

@@ -1,11 +1,14 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import axios from 'axios'
+import Swal from 'sweetalert2'
+import { Navigate } from 'react-router-dom'
 
 
 export default function Signup() {
 
+    const navigate = useNavigate()
 
     const [values, setValues] = useState({
         username: "",
@@ -23,7 +26,23 @@ export default function Signup() {
         try {
 
             const response = await axios.post('http://localhost:5000/signup', values);
-            console.log(response)
+            if (!response) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Something went wrong!",
+                    footer: '<a href="#">Why do I have this issue?</a>'
+                });
+            }
+            Swal.fire({
+                title: "You Are registered",
+                text: "Login to proceed",
+                icon: "success"
+            });
+
+            navigate('/login')
+
+
         } catch (err) {
             console.log(err)
         }

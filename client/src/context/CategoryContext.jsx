@@ -10,7 +10,7 @@ export const CategoryProvider = ({ children }) => {
         const fetchCategories = async () => {
             try {
                 const res = await axios.get("http://localhost:5000/categories");
-                // ye line flexible rakho:
+
                 setCategories(res.data.categories || res.data || []);
             } catch (err) {
                 console.error("Error fetching categories:", err);

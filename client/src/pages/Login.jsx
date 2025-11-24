@@ -2,14 +2,21 @@ import axios from 'axios'
 import React from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom'
+import { useContext } from 'react'
+import { AuthContext } from '../context/AuthProvider'
 
 export default function Login() {
 
+    const { setUser } = useContext(AuthContext)
+
     const [value, setValue] = useState({
         email: "",
-        passowrd: ""
+        password: ""
     })
 
+    const navigate = useNavigate()
 
     const handleChange = (e) => {
         setValue({ ...value, [e.target.name]: e.target.value })
@@ -20,15 +27,34 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:5000/login', value);
+            const response = await axios.post('http://localhost:5000/login', value, { withCredentials: true });
             console.log("Login Response", response)
+
+            swal.fire({
+                title: "Logged in",
+                text: "You clicked the button!",
+                icon: "success"
+            });
+            setUser(response.data.user)
+            navigate('/')
+
+
+
+
         }
         catch (err) {
             console.log(err)
+            swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Something went wrong!",
+                footer: '<a href="#">Why do I have this issue?</a>'
+            });
         }
-
-
     }
+
+
+
 
 
 
@@ -50,7 +76,7 @@ export default function Login() {
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Email Field */}
+
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                 Email address
