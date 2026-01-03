@@ -1,107 +1,226 @@
-import React, { useContext } from "react";
-import { FiSearch } from "react-icons/fi";
+import React, { useContext, useState, useEffect } from "react";
+import { FiMenu, FiX, FiArrowRight } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider";
 
 export default function Hero() {
     const navigate = useNavigate();
-    const { user, logout } = useContext(AuthContext); // logout bhi le lo
+    const { user, logout } = useContext(AuthContext);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        setTimeout(() => setIsVisible(true), 100);
+    }, []);
 
     const handleWriteBlog = () => {
-        if (!user) {
-            navigate("/login");
-            return;
-        }
-        navigate("/add-blog");
+        if (!user) navigate("/login");
+        else navigate("/add-blog");
     };
 
     return (
-        <div className="main h-screen w-full relative">
+        <div className="relative min-h-screen bg-white overflow-hidden">
+            {/* Background shapes */}
+            <div className="absolute -top-40 -left-40 w-96 h-96 bg-orange-200 rounded-full filter blur-3xl opacity-30 animate-slowSpin"></div>
+            <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-orange-100 rounded-full filter blur-3xl opacity-20 animate-slowSpin-reverse"></div>
+
             {/* Navbar */}
-            <div className="navbar flex items-center justify-between px-8 py-4 max-w-7xl mx-auto absolute top-0 left-0 right-0 z-20">
-                <div className="logo text-2xl font-bold text-white cursor-pointer drop-shadow-lg tracking-wide">
-                    Shariq
+            <nav className="relative z-50 px-6 py-4 max-w-7xl mx-auto flex items-center justify-between text-gray-900">
+                <div
+                    className="text-2xl font-bold cursor-pointer"
+                    onClick={() => navigate("/")}
+                >
+                    ShariqBlog
                 </div>
 
-                <div className="nav hidden md:block">
-                    <ul className="flex space-x-8 text-white font-medium drop-shadow-md">
-                        <li className="hover:text-blue-300 cursor-pointer transition">Home</li>
-                        <li className="hover:text-blue-300 cursor-pointer transition">Blogs</li>
-                        <li className="hover:text-blue-300 cursor-pointer transition">Categories</li>
-                        <li className="hover:text-blue-300 cursor-pointer transition">About</li>
-                        <li
-                            className="hover:text-blue-300 cursor-pointer transition"
-                            onClick={handleWriteBlog}
+                {/* Desktop Menu */}
+                <div className="hidden lg:flex items-center space-x-6">
+                    {["Home", "Blogs", "Categories", "About"].map((item) => (
+                        <button
+                            key={item}
+                            onClick={() => navigate("/" + item.toLowerCase())}
+                            className="text-gray-800 hover:text-gray-900 font-medium transition-colors"
                         >
-                            Write
-                        </li>
-                    </ul>
-                </div>
-
-                <div className="end flex items-center space-x-4">
-                    <div className="search hidden sm:flex items-center bg-white/10 backdrop-blur-md rounded-full px-3 py-1 border border-white/30 focus-within:border-blue-300 transition">
-                        <input
-                            type="text"
-                            placeholder="Search..."
-                            className="bg-transparent text-white placeholder-white/70 outline-none text-sm px-2 w-32 sm:w-44"
-                        />
-                        <button className="text-white hover:text-blue-300 transition">
-                            <FiSearch size={18} />
+                            {item}
                         </button>
-                    </div>
+                    ))}
 
-                    {/* Conditional Login/Logout */}
+                    {/* If user logged in → Write + Profile + Logout */}
                     {user ? (
                         <>
                             <button
+                                onClick={handleWriteBlog}
+                                className="bg-orange-500 text-white px-5 py-2 rounded-full font-medium flex items-center gap-1 shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all"
+                            >
+                                Write
+                                <FiArrowRight />
+                            </button>
+
+                            <button
+                                onClick={() => navigate("/profile")}
+                                className="text-gray-800 hover:text-gray-900 font-medium"
+                            >
+                                {user.name || "Profile"}
+                            </button>
+
+                            <button
                                 onClick={logout}
-                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-full transition"
+                                className="text-orange-500 font-semibold hover:text-orange-600"
                             >
                                 Logout
                             </button>
-                            <button
-                                onClick={() => navigate("/profile")}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full transition"
-                            >
-                                Profile
-                            </button>
                         </>
                     ) : (
-                        <button
-                            onClick={() => navigate("/login")}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full transition"
-                        >
-                            Login
-                        </button>
+                        <>
+                            {/* If user NOT logged in → Login + Write */}
+                            <button
+                                onClick={() => navigate("/login")}
+                                className="text-gray-800 hover:text-gray-900 font-medium"
+                            >
+                                Login
+                            </button>
+
+                            <button
+                                onClick={handleWriteBlog}
+                                className="bg-orange-500 text-white px-5 py-2 rounded-full font-medium flex items-center gap-1 shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all"
+                            >
+                                Write
+                                <FiArrowRight />
+                            </button>
+                        </>
                     )}
                 </div>
-            </div>
 
-            {/* Hero Section */}
-            <div className="hero relative h-[90vh] flex items-center justify-start text-white">
+                {/* Mobile Hamburger */}
+                <button
+                    className="lg:hidden text-gray-900"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                    {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+                </button>
+
+                {/* Mobile Dropdown Menu */}
+                {isMenuOpen && (
+                    <div className="lg:hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-md p-6 flex flex-col space-y-3">
+                        {["Home", "Blogs", "Categories", "About"].map((item) => (
+                            <button
+                                key={item}
+                                className="w-full text-left py-2 px-4 rounded-lg text-gray-900 hover:bg-gray-100 transition"
+                                onClick={() => {
+                                    navigate("/" + item.toLowerCase());
+                                    setIsMenuOpen(false);
+                                }}
+                            >
+                                {item}
+                            </button>
+                        ))}
+
+                        {/* Write Button */}
+                        <button
+                            onClick={() => {
+                                handleWriteBlog();
+                                setIsMenuOpen(false);
+                            }}
+                            className="w-full text-left py-2 px-4 rounded-lg text-gray-900 hover:bg-gray-100 transition"
+                        >
+                            Write
+                        </button>
+
+                        {/* Login / Logout */}
+                        {user ? (
+                            <div className="pt-2 border-t border-gray-200 flex flex-col space-y-2">
+                                <button
+                                    onClick={() => {
+                                        navigate("/profile");
+                                        setIsMenuOpen(false);
+                                    }}
+                                    className="text-gray-900"
+                                >
+                                    Profile
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        logout();
+                                        setIsMenuOpen(false);
+                                    }}
+                                    className="text-orange-500 font-medium"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    navigate("/login");
+                                    setIsMenuOpen(false);
+                                }}
+                                className="w-full bg-orange-500 text-white py-2 rounded-full mt-2"
+                            >
+                                Login
+                            </button>
+                        )}
+                    </div>
+                )}
+            </nav>
+
+            {/* Hero Content */}
+            <div className="relative z-10 px-6 py-20 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
+                {/* Hero Text */}
                 <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{
-                        backgroundImage:
-                            "url('https://images.pexels.com/photos/261579/pexels-photo-261579.jpeg')",
-                    }}
-                ></div>
-
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-blue-800/70 to-transparent"></div>
-
-                <div className="relative z-10 px-8 md:px-16 max-w-xl space-y-5 animate-fadeIn">
-                    <h1 className="text-3xl md:text-4xl font-bold leading-tight drop-shadow-lg">
-                        Empower Your Learning Journey
+                    className={`flex-1 text-center lg:text-left space-y-6 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                        }`}
+                >
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-gray-900">
+                        <span className="text-orange-500">Empower Your</span> <br />
+                        <span className="text-gray-900">Learning Journey</span>
                     </h1>
-                    <p className="text-lg md:text-xl text-blue-100/90 drop-shadow-md">
-                        Discover insights, study techniques, and tech tools that help you
-                        learn smarter every day.
+                    <p className="text-gray-700 text-lg max-w-md mx-auto lg:mx-0">
+                        Explore insightful articles, smart study tips, and tools to enhance your learning journey.
                     </p>
-                    <button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-medium shadow-md transition">
-                        Start Reading
-                    </button>
+
+                    {/* Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-6">
+                        <button
+                            onClick={() => navigate("/blogs")}
+                            className="group flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-full font-medium shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all"
+                        >
+                            Start Reading
+                            <FiArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />
+                        </button>
+
+                        <button
+                            onClick={handleWriteBlog}
+                            className="bg-white border border-gray-300 text-gray-900 px-6 py-3 rounded-full hover:bg-gray-100 transition-all"
+                        >
+                            Share Your Story
+                        </button>
+                    </div>
+                </div>
+
+                {/* Hero Visual */}
+                <div className="flex-1 relative w-full h-96 lg:h-[28rem]">
+                    <div className="absolute top-10 left-10 w-24 h-32 bg-white rounded-2xl border border-gray-200 shadow-md transform rotate-6 hover:scale-105 transition-transform duration-500 animate-float"></div>
+                    <div className="absolute bottom-10 right-10 w-28 h-36 bg-orange-100 rounded-2xl border border-orange-300 transform -rotate-6 hover:scale-105 transition-transform duration-500 animate-float-delayed"></div>
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-40 bg-white rounded-2xl border border-gray-300 animate-float-slow"></div>
                 </div>
             </div>
+
+            {/* Animations */}
+            <style>
+                {`
+                    @keyframes float {0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+                    @keyframes float-delayed {0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+                    @keyframes float-slow {0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+                    @keyframes slowSpin {0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+                    @keyframes slowSpinReverse {0%{transform:rotate(360deg)}100%{transform:rotate(0deg)}}
+                    .animate-float { animation: float 4s ease-in-out infinite; }
+                    .animate-float-delayed { animation: float-delayed 5s ease-in-out infinite; }
+                    .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+                    .animate-slowSpin { animation: slowSpin 120s linear infinite; }
+                    .animate-slowSpin-reverse { animation: slowSpinReverse 120s linear infinite; }
+                `}
+            </style>
         </div>
     );
 }

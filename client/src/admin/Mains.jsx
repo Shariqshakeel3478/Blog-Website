@@ -1,6 +1,15 @@
 import React from 'react';
+import { useContext } from 'react';
+import { CategoryContext } from "../context/CategoryContext";
+import { CommentContext } from '../context/CommentContext';
+import { BlogContext } from '../context/BlogContext';
 
 export default function Dashboard() {
+
+  const { categories } = useContext(CategoryContext);
+  const { comments } = useContext(CommentContext)
+  const { blogs } = useContext(BlogContext)
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
 
@@ -10,7 +19,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white shadow rounded-lg p-5">
           <p className="text-gray-500">Total Posts</p>
-          <h2 className="text-2xl font-semibold mt-2">0</h2>
+          <h2 className="text-2xl font-semibold mt-2">{blogs ? blogs.length : "N/A"}</h2>
         </div>
         <div className="bg-white shadow rounded-lg p-5">
           <p className="text-gray-500">Published / Draft Posts</p>
@@ -18,11 +27,11 @@ export default function Dashboard() {
         </div>
         <div className="bg-white shadow rounded-lg p-5">
           <p className="text-gray-500">Total Categories</p>
-          <h2 className="text-2xl font-semibold mt-2">0</h2>
+          <h2 className="text-2xl font-semibold mt-2">{categories ? categories.length : 'N/A'}</h2>
         </div>
         <div className="bg-white shadow rounded-lg p-5">
           <p className="text-gray-500">Total Comments</p>
-          <h2 className="text-2xl font-semibold mt-2">0</h2>
+          <h2 className="text-2xl font-semibold mt-2">{comments ? comments.length : 'N/A'}</h2>
         </div>
       </div>
 

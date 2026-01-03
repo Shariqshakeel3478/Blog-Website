@@ -16,7 +16,7 @@ export default function SingleBlog() {
     const [commentText, setCommentText] = useState("");
     const { user } = useContext(AuthContext);
     const { comments } = useContext(CommentContext)
-
+   
     const filteredComments = comments ? comments.filter(com => Number(com.user_id) === Number(user.id)) : [];
 
 

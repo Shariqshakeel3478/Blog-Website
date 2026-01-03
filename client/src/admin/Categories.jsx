@@ -1,24 +1,20 @@
 import React from 'react'
 import { useState } from 'react';
+import { CategoryContext } from "../context/CategoryContext";
+import { useContext } from 'react';
 
 export default function Categories() {
 
 
 
-
+    const { categories } = useContext(CategoryContext);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedColor, setSelectedColor] = useState('blue');
 
-    
-    const categories = [
-        { id: 1, name: "Technology", slug: "technology", description: "Articles about latest tech trends", color: "blue", posts: 12 },
-        { id: 2, name: "Lifestyle", slug: "lifestyle", description: "Tips for better living", color: "green", posts: 8 },
-        { id: 3, name: "Travel", slug: "travel", description: "Adventures around the world", color: "purple", posts: 15 },
-        { id: 4, name: "Food", slug: "food", description: "Delicious recipes and culinary tips", color: "red", posts: 10 },
-        { id: 5, name: "Health", slug: "health", description: "Wellness and fitness advice", color: "indigo", posts: 7 }
-    ];
 
-    // Filter categories based on search
+    console.log('category_contxt', categories)
+
+
     const filteredCategories = categories.filter(category =>
         category.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -65,7 +61,7 @@ export default function Categories() {
                                         <div
                                             key={category.id}
                                             className="category-item bg-white p-4 rounded-lg shadow-sm border-l-4 mb-4 fade-in"
-                                            style={{ borderLeftColor: getColorValue(category.color) }}
+                                            style={{ borderLeftColor: category.color }}
                                         >
                                             <div className="flex justify-between items-start">
                                                 <div>
@@ -73,7 +69,7 @@ export default function Categories() {
                                                     <p className="text-gray-600 text-sm mt-1">{category.description}</p>
                                                     <div className="flex items-center mt-2 text-sm text-gray-500">
                                                         <span className="bg-gray-100 px-2 py-1 rounded mr-2">/{category.slug}</span>
-                                                        <span><i className="far fa-file-alt mr-1"></i> {category.posts} posts</span>
+                                                        <span><i className="far fa-file-alt mr-1"></i> {category.total_blogs} posts</span>
                                                     </div>
                                                 </div>
                                                 <div className="flex space-x-2">

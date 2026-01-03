@@ -1,76 +1,30 @@
 import React, { useState } from 'react';
+import { useContext } from 'react';
+import { CommentContext } from '../context/CommentContext';
+import { Link } from 'react-router-dom';
+
 
 export default function Comments() {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
 
-    // Sample comments data
-    const comments = [
-        {
-            id: 1,
-            author: "John Doe",
-            email: "john@example.com",
-            content: "This is a great article! Very informative and well-written.",
-            post: "Getting Started with React",
-            status: "approved",
-            date: "2024-01-15",
-            avatar: "JD"
-        },
-        {
-            id: 2,
-            author: "Sarah Smith",
-            email: "sarah@example.com",
-            content: "I have a question about the implementation details. Can you elaborate more?",
-            post: "Advanced JavaScript Patterns",
-            status: "pending",
-            date: "2024-01-14",
-            avatar: "SS"
-        },
-        {
-            id: 3,
-            author: "Mike Johnson",
-            email: "mike@example.com",
-            content: "Thanks for sharing this valuable information!",
-            post: "CSS Grid vs Flexbox",
-            status: "approved",
-            date: "2024-01-13",
-            avatar: "MJ"
-        },
-        {
-            id: 4,
-            author: "Emily Brown",
-            email: "emily@example.com",
-            content: "I found a typo in the third paragraph, please fix it.",
-            post: "Node.js Best Practices",
-            status: "rejected",
-            date: "2024-01-12",
-            avatar: "EB"
-        },
-        {
-            id: 5,
-            author: "Alex Wilson",
-            email: "alex@example.com",
-            content: "This helped me solve my problem. Thank you!",
-            post: "React Hooks Guide",
-            status: "approved",
-            date: "2024-01-11",
-            avatar: "AW"
-        }
-    ];
+    const { comments } = useContext(CommentContext)
+    console.log(comments)
 
-    // Filter comments based on search and status
+
     const filteredComments = comments.filter(comment => {
         const matchesSearch =
-            comment.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            comment.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            comment.post.toLowerCase().includes(searchTerm.toLowerCase());
+            (comment.username || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (comment.comment || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (comment.blog_title || '').toLowerCase().includes(searchTerm.toLowerCase());
 
-        const matchesStatus = statusFilter === 'all' || comment.status === statusFilter;
+        const matchesStatus = statusFilter === 'all' || (comment.status || '').toLowerCase() === statusFilter;
 
         return matchesSearch && matchesStatus;
     });
 
-    // Get status count
+
+
     const statusCounts = {
         all: comments.length,
         approved: comments.filter(c => c.status === 'approved').length,
@@ -124,7 +78,7 @@ export default function Comments() {
                             </div>
 
                             <div className="flex items-center space-x-4">
-                                {/* Status Filters */}
+
                                 <div className="flex space-x-2">
                                     {[
                                         { key: 'all', label: 'All', count: statusCounts.all },
@@ -136,8 +90,8 @@ export default function Comments() {
                                             key={filter.key}
                                             onClick={() => setStatusFilter(filter.key)}
                                             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${statusFilter === filter.key
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                ? 'bg-blue-600 text-white'
+                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                                 }`}
                                         >
                                             {filter.label} ({filter.count})
@@ -152,7 +106,7 @@ export default function Comments() {
                         </div>
                     </div>
 
-                    {/* Comments List */}
+
                     <div className="p-6">
                         {filteredComments.length > 0 ? (
                             <div className="space-y-6">
@@ -163,27 +117,27 @@ export default function Comments() {
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex items-start space-x-4 flex-1">
-                                                {/* Avatar */}
+
                                                 <div className="flex-shrink-0">
                                                     <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                                                        {comment.avatar}
+                                                        {comment.username?.slice(0, 2)}
                                                     </div>
                                                 </div>
 
-                                                {/* Comment Content */}
+
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center space-x-3 mb-2">
                                                         <h3 className="text-lg font-semibold text-gray-800">
-                                                            {comment.author}
+                                                            {comment.username}
                                                         </h3>
                                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(comment.status)}`}>
                                                             <i className={`${getStatusIcon(comment.status)} mr-1`}></i>
-                                                            {comment.status.charAt(0).toUpperCase() + comment.status.slice(1)}
+                                                            {comment.status?.charAt(0).toUpperCase() + comment.status?.slice(1)}
                                                         </span>
                                                     </div>
 
                                                     <p className="text-gray-600 mb-3">
-                                                        {comment.content}
+                                                        {comment.comment}
                                                     </p>
 
                                                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
@@ -193,17 +147,19 @@ export default function Comments() {
                                                         </span>
                                                         <span>
                                                             <i className="fas fa-file-alt mr-1"></i>
-                                                            On: {comment.post}
+                                                            On: <Link to={`/blogs/${comment.blog_id}`}>
+                                                                {comment.blog_title}
+                                                            </Link>
                                                         </span>
                                                         <span>
                                                             <i className="fas fa-calendar mr-1"></i>
-                                                            {new Date(comment.date).toLocaleDateString()}
+                                                            {new Date(comment.created_at).toLocaleDateString()}
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Action Buttons */}
+
                                             <div className="flex space-x-2 ml-4">
                                                 {comment.status === 'pending' && (
                                                     <>
@@ -245,6 +201,6 @@ export default function Comments() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

@@ -351,16 +351,32 @@ app.post('/comment', (req, res) => {
 // show all comments
 
 app.get('/showComments', (req, res) => {
+    const query = `
+        SELECT 
+            u.id AS user_id,
+            u.username,
+            p.id AS blog_id,
+            p.title AS blog_title,
+            c.comment,
+            c.created_at
+        FROM comments c
+        JOIN users u ON c.user_id = u.id
+        JOIN posts p ON c.blog_id = p.id
+        ORDER BY c.created_at DESC
+    `;
 
-    db.query("SELECT * FROM comments", (err, result) => {
+    db.query(query, (err, result) => {
         if (err) {
-            res.status(400).json({
-                message: "Cannot display comments"
-            })
+            return res.status(400).json({
+                message: "Cannot display comments",
+                error: err
+            });
         }
-        res.json(result)
-    })
-})
+        res.json(result);
+    });
+});
+
+
 
 
 
@@ -431,7 +447,7 @@ app.get('/check-auth', (req, res) => {
 //logout
 
 app.post('/logout', (req, res) => {
-    res.clearCookie('token'); // token cookie ka naam jo aapne set kiya
+    res.clearCookie('token');
     res.json({
         message: 'Logged out successfully'
     });
